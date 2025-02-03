@@ -64,4 +64,19 @@ final class UserController extends AbstractController
         return $this->json($user, 201);
     }
 
+    #[Route('/api/user/{id}', name: 'api_user_get', methods: ['GET'])]
+    public function get(EntityManagerInterface $entityManager, int $id): Response
+    {
+        // Get the user from the database
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        // If the user doesn't exist, return a 404 Not Found response
+        if (!$user) {
+            throw new HttpException(404, "User not found");
+        }
+
+        // Return a JSON response
+        return $this->json($user, 200);
+    }
+
 }
