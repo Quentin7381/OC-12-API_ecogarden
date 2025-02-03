@@ -6,27 +6,32 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AdviceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdviceRepository::class)]
-#[ApiResource]
 class Advice
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['advice:read', 'user:read', 'user:write'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::ARRAY)]
+    #[Groups(['advice:read', 'advice:write', 'user:read', 'user:write'])]
     private array $month = [];
 
     #[ORM\Column(length: 255)]
+    #[Groups(['advice:read', 'advice:write', 'user:read', 'user:write'])]
     private ?string $title = null;
 
     #[ORM\Column(length: 5000)]
+    #[Groups(['advice:read', 'advice:write', 'user:read', 'user:write'])]
     private ?string $content = null;
 
-    #[ORM\ManyToOne(inversedBy: 'advices')]
+    #[ORM\ManyToOne(inversedBy: 'advices', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['advice:read', 'advice:write'])]
     private ?User $author = null;
 
     public function getId(): ?int

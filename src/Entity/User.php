@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -18,9 +19,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['advice:read', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Groups(['advice:read', 'advice:write', 'user:read', 'user:write'])]
     private ?string $username = null;
 
     /**
@@ -36,12 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 55)]
+    #[Groups(['advice:read', 'advice:write', 'user:read', 'user:write'])]
     private ?string $postal_code = null;
 
     /**
      * @var Collection<int, Advice>
      */
     #[ORM\OneToMany(targetEntity: Advice::class, mappedBy: 'author', orphanRemoval: true)]
+    #[Groups(['user:read', 'user:write'])]
     private Collection $advices;
 
     public function __construct()

@@ -11,13 +11,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\SerializerInterface;
 
 final class UserController extends AbstractController
 {
-
     public function __construct(
-        protected UserPasswordHasherInterface $passwordEncoder
+        protected UserPasswordHasherInterface $passwordEncoder,
+        protected SerializerInterface $serializer
     ) {
     }
 
@@ -27,8 +28,11 @@ final class UserController extends AbstractController
         // Get all users from the database
         $users = $entityManager->getRepository(User::class)->findAll();
 
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($users, 'json', ['groups' => 'user:read']);
+
         // Return a JSON response
-        return $this->json($users, 200);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
     #[Route('/api/user', name: 'api_user_create', methods: ['POST'])]
@@ -60,8 +64,11 @@ final class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
+
         // Return a 201 Created response
-        return $this->json($user, 201);
+        return new Response($data, 201, ['Content-Type' => 'application/json']);
     }
 
     #[Route('/api/user/{id}', name: 'api_user_get', methods: ['GET'])]
@@ -75,8 +82,11 @@ final class UserController extends AbstractController
             throw new HttpException(404, "User not found");
         }
 
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
+
         // Return a JSON response
-        return $this->json($user, 200);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
     #[Route('/api/user/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
@@ -111,8 +121,11 @@ final class UserController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
+
         // Return a JSON response
-        return $this->json($user, 200);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
 }
