@@ -82,4 +82,46 @@ final class AdviceController extends AbstractController
         // Return a JSON response
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
+
+    #[Route('/api/advice/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
+    public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response {
+        // Get the advice from the database
+        $advice = $entityManager->getRepository(Advice::class)->find($id);
+
+        // If the advice doesn't exist, return a 404 Not Found response
+        if (!$advice) {
+            throw new HttpException(404, "Advice not found");
+        }
+
+        // Check access rights
+        $this->denyAccessUnlessGranted('edit', $advice);
+
+        // Decode the JSON data
+        $data = json_decode($request->getContent(), true);
+        if (empty($data)) {
+            throw new HttpException(400, "Couldn't parse JSON body");
+        }
+
+        // Update the advice's data
+        if (isset($data['month'])) {
+            $advice->setMonth($data['month']);
+        }
+        if (isset($data['title'])) {
+            $advice->setTitle($data['title']);
+        }
+        if (isset($data['content'])) {
+            $advice->setContent($data['content']);
+        }
+
+        // Save the advice to the database
+        $entityManager->persist($advice);
+        $entityManager->flush();
+
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
+
+        // Return a JSON response
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
+    }
+
 }
