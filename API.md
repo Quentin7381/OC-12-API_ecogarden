@@ -93,6 +93,19 @@ POST /api/auth
 ```json	
 400 Bad Request
 {
+    "error": "No body provided"
+}
+```
+
+```json
+400 Bad Request
+{
+    "error": "Couldn't parse JSON body"
+}
+
+```json	
+400 Bad Request
+{
     "error": "Missing or invalid fields",
     "details": {
         "password": "Missing required field"

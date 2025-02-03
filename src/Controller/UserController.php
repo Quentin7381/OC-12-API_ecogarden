@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
 final class UserController extends AbstractController
@@ -26,8 +27,18 @@ final class UserController extends AbstractController
     #[Route('/user', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
-        // Create a new user
+        // Get the data from the request
         $data = json_decode($request->getContent(), true);
+        if(empty($data)){
+            throw new HttpException(400, "Couldn't parse JSON body");
+        }
+
+        // Decode the JSON data
+        $data = json_decode($request->getContent(), true);
+        if(empty($data)){
+            throw new HttpException(400, "Couldn't parse JSON body");
+        }
+        
         $user = new User();
         $user->setUsername($data['username']);
         $user->setPassword($data['password']);
