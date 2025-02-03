@@ -12,13 +12,12 @@ class ExceptionListener
         $exception = $event->getThrowable();
         $response = new JsonResponse([
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTrace(),
         ]);
 
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
         } else {
-            $response->setStatusCode(JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+            $response->setStatusCode(500);
         }
 
         $event->setResponse($response);
