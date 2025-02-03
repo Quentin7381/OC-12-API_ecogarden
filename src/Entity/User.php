@@ -32,6 +32,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    #[ORM\Column(length: 55)]
+    private ?string $postal_code = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,5 +108,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getPostalCode(): ?string
+    {
+        return $this->postal_code;
+    }
+
+    public function setPostalCode(string $postal_code): static
+    {
+        $this->postal_code = $postal_code;
+
+        return $this;
     }
 }
