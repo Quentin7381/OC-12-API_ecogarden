@@ -10,11 +10,18 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
 final class UserController extends AbstractController
 {
-    #[Route('/user', name: 'api_user', methods: ['GET'])]
+
+    public function __construct(
+        protected UserPasswordHasherInterface $passwordEncoder
+    ) {
+    }
+
+    #[Route('/api/user', name: 'api_user', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Get all users from the database
@@ -24,27 +31,31 @@ final class UserController extends AbstractController
         return $this->json($users, 200);
     }
 
-    #[Route('/user', name: 'api_user_create', methods: ['POST'])]
+    #[Route('/api/user', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
         // Get the data from the request
         $data = json_decode($request->getContent(), true);
-        if(empty($data)){
+        if (empty($data)) {
             throw new HttpException(400, "Couldn't parse JSON body");
         }
 
         // Decode the JSON data
         $data = json_decode($request->getContent(), true);
-        if(empty($data)){
+        if (empty($data)) {
             throw new HttpException(400, "Couldn't parse JSON body");
         }
-        
+
         $user = new User();
         $user->setUsername($data['username']);
-        $user->setPassword($data['password']);
         $user->setPostalCode($data['postal_code']);
         $user->setRoles(['ROLE_USER']);
 
+        // Hash the password with symfony's password encoder
+        $password = $data['password'];
+        $hash = $this->passwordEncoder->hashPassword($user, $password);
+        $user->setPassword($hash);
+        
         // Save the user to the database
         $entityManager->persist($user);
         $entityManager->flush();
@@ -52,5 +63,5 @@ final class UserController extends AbstractController
         // Return a 201 Created response
         return $this->json($user, 201);
     }
-    
+
 }
