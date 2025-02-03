@@ -235,6 +235,16 @@ GET /api/user/1
 ```
 
 ```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
 403 Forbidden
 {
     "error": "You tried to access an account that is not yours"
@@ -311,6 +321,7 @@ PATCH /api/user/1
     //     "fix": { "href": "/api/user" }
     // }
 }
+```
 
 ```json
 400 Bad Request
@@ -329,6 +340,16 @@ PATCH /api/user/1
 401 Unauthorized
 {
     "error": "No JWT token provided. You can obtain one by authenticating with the /api/auth endpoint"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
     // "_links": {
     //     "fix": { "href": "/api/auth" }
     // }
@@ -390,11 +411,22 @@ DELETE /api/user/1
     //     "fix": { "href": "/api/user" }
     // }
 }
+```
 
 ```json
 401 Unauthorized
 {
     "error": "No JWT token provided. You can obtain one by authenticating with the /api/auth endpoint"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
     // "_links": {
     //     "fix": { "href": "/api/auth" }
     // }
@@ -508,6 +540,16 @@ GET /api/advice?month=1
 ```
 
 ```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
 400 Bad Request
 {
     "error": "Missing or invalid fields",
@@ -574,6 +616,16 @@ GET /api/advice/1
 401 Unauthorized
 {
     "error": "No JWT token provided. You can obtain one by authenticating with the /api/auth endpoint"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
     // "_links": {
     //     "fix": { "href": "/api/auth" }
     // }
@@ -677,6 +729,16 @@ POST /api/advice
 }
 ```
 
+```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
 #### PUT|PATCH /api/advice/{id} : Modifier un conseil
 
 **Description** : Modifier un conseil
@@ -769,6 +831,16 @@ PATCH /api/advice/1
 ```
 
 ```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
 403 Forbidden
 {
     "error": "You tried to modify an advice that is not yours"
@@ -836,6 +908,16 @@ DELETE /api/advice/1
 401 Unauthorized
 {
     "error": "No JWT token provided. You can obtain one by authenticating with the /api/auth endpoint"
+    // "_links": {
+    //     "fix": { "href": "/api/auth" }
+    // }
+}
+```
+
+```json
+401 Unauthorized
+{
+    "error": "Invalid JWT token provided"
     // "_links": {
     //     "fix": { "href": "/api/auth" }
     // }
