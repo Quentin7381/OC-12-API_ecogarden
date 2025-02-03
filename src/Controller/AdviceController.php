@@ -70,4 +70,16 @@ final class AdviceController extends AbstractController
         // Return a JSON response
         return new Response($data, 201, ['Content-Type' => 'application/json']);
     }
+
+    #[Route('/api/advice/{id}', name: 'app_advice_get', methods: ['GET'])]
+    public function get(EntityManagerInterface $entityManager, int $id): Response {
+        // Get the advice from the database
+        $advice = $entityManager->getRepository(Advice::class)->find($id);
+
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
+
+        // Return a JSON response
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
+    }
 }
