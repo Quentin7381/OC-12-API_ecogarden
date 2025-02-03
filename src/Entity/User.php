@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -35,6 +37,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 55)]
     private ?string $postal_code = null;
+
+    /**
+     * @var Collection<int, Advice>
+     */
+    #[ORM\OneToMany(targetEntity: Advice::class, mappedBy: 'author', orphanRemoval: true)]
+    private Collection $advices;
+
+    public function __construct()
+    {
+        $this->advices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -119,6 +132,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPostalCode(string $postal_code): static
     {
         $this->postal_code = $postal_code;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advice>
+     */
+    public function getAdvices(): Collection
+    {
+        return $this->advices;
+    }
+
+    public function addAdvice(Advice $advice): static
+    {
+        if (!$this->advices->contains($advice)) {
+            $this->advices->add($advice);
+            $advice->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvice(Advice $advice): static
+    {
+        if ($this->advices->removeElement($advice)) {
+            // set the owning side to null (unless already changed)
+            if ($advice->getAuthor() === $this) {
+                $advice->setAuthor(null);
+            }
+        }
 
         return $this;
     }
