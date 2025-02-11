@@ -124,4 +124,23 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    #[Route('/api/v1/users/{id}/advices', name: 'app_user_advices', methods: ['GET'])]
+    public function userAdvices(EntityManagerInterface $entityManager, int $id): Response {
+        // Get the user from the database
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        // If the user doesn't exist, return a 404 Not Found response
+        if (!$user) {
+            throw new HttpException(404, "User not found");
+        }
+
+        // Get all advices from the database
+        $advices = $entityManager->getRepository(Advice::class)->findBy(['author' => $user]);
+
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
+
+        // Return a JSON response
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
+    }
 }
