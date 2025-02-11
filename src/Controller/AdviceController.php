@@ -21,10 +21,19 @@ final class AdviceController extends AbstractController
     ) {
     }
 
-    #[Route('/api/v1/advices', name: 'app_advice', methods: ['GET'])]
-    public function index(EntityManagerInterface $entityManager): Response {
+    #[Route('/advices', name: 'app_advice', methods: ['GET'])]
+    public function index(EntityManagerInterface $entityManager): Response
+    {
+        // Get the month parameter
+        $request = Request::createFromGlobals();
+        $month = $request->query->get('month');
+
         // Get all advices from the database
-        $advices = $entityManager->getRepository(Advice::class)->findAll();
+        if(!empty($month)) {
+            $advices = $entityManager->getRepository(Advice::class)->findByMonth($month);
+        } else {
+            $advices = $entityManager->getRepository(Advice::class)->findAll();
+        }
 
         // Serialize the data with groups
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
