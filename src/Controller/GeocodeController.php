@@ -19,7 +19,7 @@ final class GeocodeController extends AbstractController
     public function index(string $postalCode): Response
     {
         // Get the response from the GeocodeApiClient service
-        $response = $this->geocodeApiClient->getGeocodeData($postalCode);
+        $response = $this->geocodeApiClient->getGeocodePosition($postalCode);
 
         // Return a JSON response
         return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);

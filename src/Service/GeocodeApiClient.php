@@ -2,13 +2,15 @@
 
 namespace App\Service;
 
+use Symfony\Component\HttpKernel\Exception\HttpException;
+
 class GeocodeApiClient
 {
     public function __construct(private ApiClient $apiClient)
     {
     }
 
-    public function getGeocodeData(string $postalCode): array
+    public function getGeocodePosition(string $postalCode): array
     {
         // Get the .env api key
         $key = $_ENV['GEOCODING_KEY'];
@@ -29,7 +31,7 @@ class GeocodeApiClient
 
         // Manage an empty response
         if (empty($response)) {
-            return ['error' => 'No data found'];
+            throw new HttpException(404, 'Catcode not found in France or invalid');
         }
 
         // Manage multiple responses (first is most relevant)
@@ -42,8 +44,8 @@ class GeocodeApiClient
         $lon = $response['lon'];
 
         return [
-            'lat' => $lat,
-            'lon' => $lon
+            'latitude' => $lat,
+            'longitude' => $lon
         ];
     }
 }
