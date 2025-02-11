@@ -20,7 +20,7 @@ final class AdviceController extends AbstractController
     ) {
     }
 
-    #[Route('/api/advice', name: 'app_advice', methods: ['GET'])]
+    #[Route('/api/v1/advice', name: 'app_advice', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response {
         // Get all advices from the database
         $advices = $entityManager->getRepository(Advice::class)->findAll();
@@ -32,7 +32,7 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/advice', name: 'app_advice_create', methods: ['POST'])]
+    #[Route('/api/v1/advice', name: 'app_advice_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response {
         // Get the data from the request
         $data = json_decode($request->getContent(), true);
@@ -71,7 +71,7 @@ final class AdviceController extends AbstractController
         return new Response($data, 201, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/advice/{id}', name: 'app_advice_get', methods: ['GET'])]
+    #[Route('/api/v1/advice/{id}', name: 'app_advice_get', methods: ['GET'])]
     public function get(EntityManagerInterface $entityManager, int $id): Response {
         // Get the advice from the database
         $advice = $entityManager->getRepository(Advice::class)->find($id);
@@ -83,7 +83,7 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/advice/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
+    #[Route('/api/v1/advice/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response {
         // Get the advice from the database
         $advice = $entityManager->getRepository(Advice::class)->find($id);

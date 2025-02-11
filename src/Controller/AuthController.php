@@ -13,7 +13,7 @@ use App\Repository\UserRepository;
 
 class AuthController extends AbstractController
 {
-    #[Route('/api/login', name: 'api_login', methods: ['POST'])]
+    #[Route('/api/v1/login', name: 'api_login', methods: ['POST'])]
     public function login(Request $request, UserRepository $userRepository): Response
     {
         $data = json_decode($request->getContent(), true);

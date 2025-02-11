@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\SerializerInterface;
 
 final class UserController extends AbstractController
@@ -22,7 +21,7 @@ final class UserController extends AbstractController
     ) {
     }
 
-    #[Route('/api/user', name: 'api_user', methods: ['GET'])]
+    #[Route('/api/v1/user', name: 'api_user', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Get all users from the database
@@ -35,7 +34,7 @@ final class UserController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/user', name: 'api_user_create', methods: ['POST'])]
+    #[Route('/api/v1/user', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
         // Get the data from the request
@@ -71,7 +70,7 @@ final class UserController extends AbstractController
         return new Response($data, 201, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/user/{id}', name: 'api_user_get', methods: ['GET'])]
+    #[Route('/api/v1/user/{id}', name: 'api_user_get', methods: ['GET'])]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
         // Get the user from the database
@@ -89,7 +88,7 @@ final class UserController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/user/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
+    #[Route('/api/v1/user/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         // Get the user from the database
