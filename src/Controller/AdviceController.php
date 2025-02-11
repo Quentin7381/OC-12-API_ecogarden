@@ -13,6 +13,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/api/v1')]
 final class AdviceController extends AbstractController
 {
     public function __construct(
@@ -32,8 +33,9 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/advices', name: 'app_advice_create', methods: ['POST'])]
-    public function create(EntityManagerInterface $entityManager, Request $request): Response {
+    #[Route('/advices', name: 'app_advice_create', methods: ['POST'])]
+    public function create(EntityManagerInterface $entityManager, Request $request): Response
+    {
         // Get the data from the request
         $data = json_decode($request->getContent(), true);
         if (empty($data)) {
@@ -44,9 +46,9 @@ final class AdviceController extends AbstractController
         $advice->setMonth($data['month']);
         $advice->setTitle($data['title']);
         $advice->setContent($data['content']);
-        
-        if(isset($data['author'])) {
-            if(
+
+        if (isset($data['author'])) {
+            if (
                 $this->isGranted('ROLE_ADMIN')
                 || $this->getUser()->getId() === $data['author']
             ) {
@@ -71,8 +73,9 @@ final class AdviceController extends AbstractController
         return new Response($data, 201, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/advices/{id}', name: 'app_advice_get', methods: ['GET'])]
-    public function get(EntityManagerInterface $entityManager, int $id): Response {
+    #[Route('/advices/{id}', name: 'app_advice_get', methods: ['GET'])]
+    public function get(EntityManagerInterface $entityManager, int $id): Response
+    {
         // Get the advice from the database
         $advice = $entityManager->getRepository(Advice::class)->find($id);
 
@@ -83,8 +86,9 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/advices/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
-    public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response {
+    #[Route('/advices/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
+    public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
+    {
         // Get the advice from the database
         $advice = $entityManager->getRepository(Advice::class)->find($id);
 
@@ -124,8 +128,9 @@ final class AdviceController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/users/{id}/advices', name: 'app_user_advices', methods: ['GET'])]
-    public function userAdvices(EntityManagerInterface $entityManager, int $id): Response {
+    #[Route('/users/{id}/advices', name: 'app_user_advices', methods: ['GET'])]
+    public function userAdvices(EntityManagerInterface $entityManager, int $id): Response
+    {
         // Get the user from the database
         $user = $entityManager->getRepository(User::class)->find($id);
 

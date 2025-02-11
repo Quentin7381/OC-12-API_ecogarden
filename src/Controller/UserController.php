@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +13,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @Route("/api/v1")
+ */
 final class UserController extends AbstractController
 {
     public function __construct(
@@ -21,7 +24,7 @@ final class UserController extends AbstractController
     ) {
     }
 
-    #[Route('/api/v1/users', name: 'api_user', methods: ['GET'])]
+    #[Route('/users', name: 'api_user', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Get all users from the database
@@ -34,7 +37,7 @@ final class UserController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/users/{id}', name: 'api_user_get', methods: ['GET'])]
+    #[Route('/users/{id}', name: 'api_user_get', methods: ['GET'])]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
         // Get the user from the database
@@ -52,7 +55,7 @@ final class UserController extends AbstractController
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/api/v1/users/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
+    #[Route('/users/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         // Get the user from the database

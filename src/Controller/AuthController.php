@@ -13,16 +13,16 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
-
+#[Route('/api/v1')]
 class AuthController extends AbstractController
 {
     public function __construct(
-    protected UserPasswordHasherInterface $passwordEncoder,
-    protected SerializerInterface $serializer
+        protected UserPasswordHasherInterface $passwordEncoder,
+        protected SerializerInterface $serializer
     ) {
     }
-    
-    #[Route('/api/v1/register', name: 'api_user_create', methods: ['POST'])]
+
+    #[Route('/register', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
         // Get the data from the request
@@ -46,7 +46,7 @@ class AuthController extends AbstractController
         $password = $data['password'];
         $hash = $this->passwordEncoder->hashPassword($user, $password);
         $user->setPassword($hash);
-        
+
         // Save the user to the database
         $entityManager->persist($user);
         $entityManager->flush();
