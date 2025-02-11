@@ -13,6 +13,8 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 #[Route('/api/v1')]
 final class AdviceController extends AbstractController
 {
@@ -21,6 +23,12 @@ final class AdviceController extends AbstractController
     ) {
     }
 
+    /**
+     * Returns all advices
+     * 
+     * @return JsonResponse The advices
+     * 
+     */
     #[Route('/advices', name: 'app_advice', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -39,9 +47,15 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Create a new advice
+     * 
+     * @return JsonResponse The advice data
+     * 
+     */
     #[Route('/advices', name: 'app_advice_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
@@ -79,9 +93,15 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new Response($data, 201, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 201, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Returns an advice by ID
+     * 
+     * @return JsonResponse The advice data
+     * 
+     */
     #[Route('/advices/{id}', name: 'app_advice_get', methods: ['GET'])]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
@@ -92,9 +112,15 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Update an advice by ID
+     * 
+     * @return JsonResponse The advice data
+     * 
+     */
     #[Route('/advices/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
@@ -134,9 +160,15 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Delete an advice by ID
+     * 
+     * @return JsonResponse The advice data
+     * 
+     */
     #[Route('/users/{id}/advices', name: 'app_user_advices', methods: ['GET'])]
     public function userAdvices(EntityManagerInterface $entityManager, int $id): Response
     {
@@ -155,6 +187,6 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 }

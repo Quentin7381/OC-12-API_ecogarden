@@ -12,6 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+use OpenApi\Annotations as OA;
+
 #[Route('/api/v1')]
 final class MeteoController extends AbstractController
 {
@@ -22,14 +24,26 @@ final class MeteoController extends AbstractController
     ) {
     }
 
-    #[Route('/meteo/{postal_code}', name: 'app_meteo')]
+    /**
+     * Returns the meteo data for a given postal code
+     * 
+     * @return JsonResponse The meteo data
+     * 
+     */
+    #[Route('/meteo/{postal_code}', name: 'app_meteo', methods: ['GET'])]
     public function index(string $postal_code): Response
     {
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
         return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
 
-    #[Route('/meteo', name: 'app_meteo_default')]
+    /**
+     * Returns the meteo data for the user's postal code
+     * 
+     * @return JsonResponse The meteo data
+     * 
+     */
+    #[Route('/meteo', name: 'app_meteo_default', methods: ['GET'])]
     public function default(): Response
     {
         $user = $this->getUser();

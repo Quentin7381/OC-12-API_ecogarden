@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Service\GeocodeApiClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+
 #[Route('/api/v1/test')]
 final class GeocodeController extends AbstractController
 {
@@ -16,7 +17,13 @@ final class GeocodeController extends AbstractController
     ) {
     }
 
-    #[Route('/geocode/{postalCode}', name: 'app_geocode')]
+    /**
+     * Returns the geocode position for a given postal code
+     * 
+     * @return JsonResponse The geocode position
+     * 
+     */
+    #[Route('/geocode/{postalCode}', name: 'app_geocode', methods: ['GET'])]
     public function index(string $postalCode): Response
     {
         // Get the response from the GeocodeApiClient service

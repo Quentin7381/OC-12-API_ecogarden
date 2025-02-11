@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/api/v1')]
 class AuthController extends AbstractController
@@ -22,6 +23,12 @@ class AuthController extends AbstractController
     ) {
     }
 
+    /**
+     * Create a new user
+     * 
+     * @return JsonResponse The user data
+     * 
+     */
     #[Route('/register', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
@@ -55,6 +62,6 @@ class AuthController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a 201 Created response
-        return new Response($data, 201, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 201, ['Content-Type' => 'application/json']);
     }
 }

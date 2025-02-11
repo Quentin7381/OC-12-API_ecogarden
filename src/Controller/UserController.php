@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @Route("/api/v1")
@@ -24,6 +25,12 @@ final class UserController extends AbstractController
     ) {
     }
 
+    /**
+     * Create a new user
+     * 
+     * @return Response The user data
+     * 
+     */
     #[Route('/users', name: 'api_user', methods: ['GET'])]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -34,9 +41,15 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($users, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Get a user by ID
+     * 
+     * @return Response The user data
+     * 
+     */
     #[Route('/users/{id}', name: 'api_user_get', methods: ['GET'])]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
@@ -52,9 +65,15 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * Update a user by ID
+     * 
+     * @return JsonResponse The user data
+     * 
+     */
     #[Route('/users/{id}', name: 'api_user_update', methods: ['PUT', 'PATCH'])]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
@@ -91,7 +110,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
     }
 
 }
