@@ -30,3 +30,7 @@ services:
     App\Service\ApiClient:
         arguments:
             $httpClient: '@http_client'
+
+    App\Service\GeocodeApiClient:
+        arguments:
+            $cache: '@cache.app'

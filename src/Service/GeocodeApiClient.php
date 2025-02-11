@@ -3,49 +3,61 @@
 namespace App\Service;
 
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class GeocodeApiClient
 {
-    public function __construct(private ApiClient $apiClient)
+    private ApiClient $apiClient;
+    private CacheInterface $cache;
+
+    public function __construct(ApiClient $apiClient, CacheInterface $cache)
     {
+        $this->apiClient = $apiClient;
+        $this->cache = $cache;
     }
 
     public function getGeocodePosition(string $postalCode): array
     {
-        // Get the .env api key
-        $key = $_ENV['GEOCODING_KEY'];
+        return $this->cache->get('geocode_' . $postalCode, function (ItemInterface $item) use ($postalCode) {
+            // No cache expiration
+            $item->expiresAfter(null);
 
-        // Build the url
-        $url = "https://geocode.maps.co/search?";
+            // Get the .env api key
+            $key = $_ENV['GEOCODING_KEY'];
 
-        $params = [
-            'postalcode' => $postalCode,
-            'country' => 'FR',
-            'api_key' => $key
-        ];
+            // Build the url
+            $url = "https://geocode.maps.co/search?";
 
-        $url .= http_build_query($params);
+            $params = [
+                'postalcode' => $postalCode,
+                'country' => 'FR',
+                'api_key' => $key
+            ];
 
-        // Get the response
-        $response = $this->apiClient->fetchData($url);
+            $url .= http_build_query($params);
 
-        // Manage an empty response
-        if (empty($response)) {
-            throw new HttpException(404, 'Catcode not found in France or invalid');
-        }
+            // Get the response
+            $response = $this->apiClient->fetchData($url);
 
-        // Manage multiple responses (first is most relevant)
-        if (is_array($response)) {
-            $response = $response[0];
-        }
+            // Manage an empty response
+            if (empty($response)) {
+                throw new HttpException(404, 'Catcode not found in France or invalid');
+            }
 
-        // Get the latitude and longitude
-        $lat = $response['lat'];
-        $lon = $response['lon'];
+            // Manage multiple responses (first is most relevant)
+            if (is_array($response)) {
+                $response = $response[0];
+            }
 
-        return [
-            'latitude' => $lat,
-            'longitude' => $lon
-        ];
+            // Get the latitude and longitude
+            $lat = $response['lat'];
+            $lon = $response['lon'];
+
+            return [
+                'latitude' => $lat,
+                'longitude' => $lon
+            ];
+        });
     }
 }

@@ -11,8 +11,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 #[Route('/api/v1/test')]
 final class GeocodeController extends AbstractController
 {
-    public function __construct(private GeocodeApiClient $geocodeApiClient)
-    {
+    public function __construct(
+        private GeocodeApiClient $geocodeApiClient
+    ) {
     }
 
     #[Route('/geocode/{postalCode}', name: 'app_geocode')]
