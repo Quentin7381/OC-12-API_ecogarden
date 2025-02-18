@@ -109,17 +109,15 @@ final class AdviceController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $data = $this->validator->validate($request, [
+        $advice = new Advice();
+        $this->validator->fill($request, [
             'body' => [
                 'month' => 'advice::month',
                 'title' => 'advice::title',
                 'content' => 'advice::content',
                 'author' => 'advice::author'
-            ]
-        ]);
-
-        $data = $data['body'];
-        $advice = new Advice($data);
+            ],
+        ], $advice);
 
         // Save the advice to the database
         $entityManager->persist($advice);
@@ -232,25 +230,14 @@ final class AdviceController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $advice);
 
         // Fill the advice with the new data
-        $data = $this->validator->validate($request, [
+        $this->validator->fill($request, [
             'body' => [
                 'month' => '?advice::month',
                 'title' => '?advice::title',
                 'content' => '?advice::content',
                 'author' => '?advice::author'
             ]
-        ]);
-
-        $data = $data['body'];
-        $month = $data['month'] ?? $advice->getMonth();
-        $title = $data['title'] ?? $advice->getTitle();
-        $content = $data['content'] ?? $advice->getContent();
-        $author = $data['author'] ?? $advice->getAuthor();
-
-        $advice->setMonth($month);
-        $advice->setTitle($title);
-        $advice->setContent($content);
-        $advice->setAuthor($author);
+        ], $advice);
 
         // Save the advice to the database
         $entityManager->persist($advice);

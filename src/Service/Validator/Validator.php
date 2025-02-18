@@ -23,6 +23,33 @@ class Validator {
     ){
     }
 
+    public function fill($request, $needs, $entity, $additionalData = []): array{
+        $data = $this->validate($request, $needs, $additionalData);
+
+        $collectedData = [];
+        foreach($needs as $key => $value){
+            foreach($value as $field => $validator){
+                $field = trim($field, '?');
+                $collectedData[$field] = $data[$key][$field] ?? null;
+            }
+        }
+
+        foreach($collectedData as $field => $value){
+            if($value === null){
+                continue;
+            }
+
+            $setter = 'set' . ucfirst($field);
+            $setter = preg_replace_callback('/_([a-z])/', function($matches){
+                return strtoupper($matches[1]);
+            }, $setter);
+
+            $entity->$setter($value);
+        }
+
+        return $data;
+    }
+
     public function validate($request, $needs, $additionalData = []): array{
         // We don't need to validate anything if there is no needs.
         if(empty($needs)){

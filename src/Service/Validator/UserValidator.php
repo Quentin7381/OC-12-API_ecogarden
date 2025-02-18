@@ -2,7 +2,6 @@
 
 namespace App\Service\Validator;
 use Exception;
-use App\Entity\Advice;
 use App\Entity\User;
 
 class UserValidator extends Validator

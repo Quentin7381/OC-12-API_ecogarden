@@ -167,27 +167,25 @@ final class UserController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $user);
 
         // Decode the JSON data
-        $data = $this->validator->validate($request, [
+        $data = $this->validator->fill($request, [
             'body' => [
                 'username' => '?user::username',
                 'postal_code' => '?user::postal_code',
-                'roles' => '?user::roles'
+                'roles' => '?user::roles',
+                'password' => '?user::password'
             ]
-        ]);
-
-        $data = $data['body'];
-        $username = $data['username'] ?? $user->getUsername();
-        $postal_code = $data['postal_code'] ?? $user->getPostalCode();
-        $roles = $data['roles'] ?? $user->getRoles();
-
-        // Update the user
-        $user->setUsername($username);
-        $user->setPostalCode($postal_code);
-        $user->setRoles($roles);
+        ], $user);
 
         // Save the user to the database
         $entityManager->persist($user);
         $entityManager->flush();
+
+        // Hash the password with symfony's password encoder
+        if(!empty($data['password'])){
+            $password = $data['password'];
+            $hash = $this->passwordEncoder->hashPassword($user, $password);
+            $user->setPassword($hash);
+        }
 
         // Serialize the data with groups
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);

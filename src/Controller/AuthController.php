@@ -9,7 +9,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use App\Service\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -56,20 +55,15 @@ class AuthController extends AbstractController
     #[Route('/register', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $data = $this->validator->validate($request, [
+        $user = new User();
+        $data = $this->validator->fill($request, [
             'body' => [
                 'username' => 'user::username',
                 'postal_code' => 'user::postal_code',
                 'password' => 'user::password',
+                'roles' => 'user::roles'
             ]
-        ]);
-
-        $data = $data['body'];
-
-        $user = new User();
-        $user->setUsername($data['username']);
-        $user->setPostalCode($data['postal_code']);
-        $user->setRoles(['ROLE_USER']);
+        ], $user);
 
         // Hash the password with symfony's password encoder
         $password = $data['password'];
