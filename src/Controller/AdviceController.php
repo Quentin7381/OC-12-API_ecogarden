@@ -234,18 +234,23 @@ final class AdviceController extends AbstractController
         // Fill the advice with the new data
         $data = $this->validator->validate($request, [
             'body' => [
-                'month' => 'advice::month',
-                'title' => 'advice::title',
-                'content' => 'advice::content',
-                'author' => 'advice::author'
+                'month' => '?advice::month',
+                'title' => '?advice::title',
+                'content' => '?advice::content',
+                'author' => '?advice::author'
             ]
         ]);
 
         $data = $data['body'];
-        $advice->setMonth($data['month']);
-        $advice->setTitle($data['title']);
-        $advice->setContent($data['content']);
-        $advice->setAuthor($data['author']);
+        $month = $data['month'] ?? $advice->getMonth();
+        $title = $data['title'] ?? $advice->getTitle();
+        $content = $data['content'] ?? $advice->getContent();
+        $author = $data['author'] ?? $advice->getAuthor();
+
+        $advice->setMonth($month);
+        $advice->setTitle($title);
+        $advice->setContent($content);
+        $advice->setAuthor($author);
 
         // Save the advice to the database
         $entityManager->persist($advice);

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
+use App\Service\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,7 +22,8 @@ class AuthController extends AbstractController
 {
     public function __construct(
         protected UserPasswordHasherInterface $passwordEncoder,
-        protected SerializerInterface $serializer
+        protected SerializerInterface $serializer,
+        protected Validator $validator
     ) {
     }
 
@@ -54,17 +56,15 @@ class AuthController extends AbstractController
     #[Route('/register', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
-        // Get the data from the request
-        $data = json_decode($request->getContent(), true);
-        if (empty($data)) {
-            throw new HttpException(400, "Couldn't parse JSON body");
-        }
+        $data = $this->validator->validate($request, [
+            'body' => [
+                'username' => 'user::username',
+                'postal_code' => 'user::postal_code',
+                'password' => 'user::password',
+            ]
+        ]);
 
-        // Decode the JSON data
-        $data = json_decode($request->getContent(), true);
-        if (empty($data)) {
-            throw new HttpException(400, "Couldn't parse JSON body");
-        }
+        $data = $data['body'];
 
         $user = new User();
         $user->setUsername($data['username']);

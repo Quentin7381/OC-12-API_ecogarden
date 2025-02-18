@@ -93,7 +93,7 @@ class AdviceValidator extends Validator
     public function validate_author(&$value)
     {
         // We load the current user
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $this->getUser();
         $user_id = $user->getId();
 
         // If the author is not provided, we use the current user

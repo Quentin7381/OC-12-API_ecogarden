@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
+use App\Service\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -27,7 +28,8 @@ final class UserController extends AbstractController
 {
     public function __construct(
         protected UserPasswordHasherInterface $passwordEncoder,
-        protected SerializerInterface $serializer
+        protected SerializerInterface $serializer,
+        protected Validator $validator
     ) {
     }
 
@@ -165,18 +167,23 @@ final class UserController extends AbstractController
         $this->denyAccessUnlessGranted('edit', $user);
 
         // Decode the JSON data
-        $data = json_decode($request->getContent(), true);
-        if (empty($data)) {
-            throw new HttpException(400, "Couldn't parse JSON body");
-        }
+        $data = $this->validator->validate($request, [
+            'body' => [
+                'username' => '?user::username',
+                'postal_code' => '?user::postal_code',
+                'roles' => '?user::roles'
+            ]
+        ]);
 
-        // Update the user's data
-        if (isset($data['username'])) {
-            $user->setUsername($data['username']);
-        }
-        if (isset($data['postal_code'])) {
-            $user->setPostalCode($data['postal_code']);
-        }
+        $data = $data['body'];
+        $username = $data['username'] ?? $user->getUsername();
+        $postal_code = $data['postal_code'] ?? $user->getPostalCode();
+        $roles = $data['roles'] ?? $user->getRoles();
+
+        // Update the user
+        $user->setUsername($username);
+        $user->setPostalCode($postal_code);
+        $user->setRoles($roles);
 
         // Save the user to the database
         $entityManager->persist($user);

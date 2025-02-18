@@ -7,21 +7,23 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-
+use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 
 class Validator {
+
+    protected $request_data;
 
     public function __construct(
         protected EntityManagerInterface $entityManager,
         protected ContainerInterface $container,
         protected TokenStorageInterface $tokenStorage,
         // inject authorisation checker service
-        protected AuthorizationCheckerInterface $authChecker
-
+        protected AuthorizationCheckerInterface $authChecker,
+        protected RoleHierarchyInterface $roleHierarchy
     ){
     }
 
-    public function validate($request, $needs): array{
+    public function validate($request, $needs, $additionalData = []): array{
         // We don't need to validate anything if there is no needs.
         if(empty($needs)){
             return [];
@@ -33,19 +35,22 @@ class Validator {
         // Prepare the data.
         $data = [
             'header' => $request->headers->all(),
-            'query' => $request->query->all()
+            'query' => $request->query->all(),
+            'additional' => $additionalData
         ];
 
         // Get the body
         $body = json_decode($request->getContent(), true) ?? [];
 
-        // If the body is not JSON, we assume it's form data.
+        // If the body is not an array, we throw an exception.
         if(empty($body)){
-            $body = $request->request->all() ?? [];
+            throw new HttpException(400, 'Invalid JSON body');
         }
 
-        // Add the body to the data.
         $data['body'] = $body;
+
+        // Save the request data.
+        $this->request_data = $data;
 
         // Validate the data.
         foreach($needs as $key => $value){
@@ -108,6 +113,12 @@ class Validator {
             throw new Exception('Invalid validator format, requires a string');
         }
 
+        // If validator starts with '?' we assume it's optional.
+        $optional = str_starts_with($validator, '?');
+
+        // We remove the '?' if it was there.
+        $validator = ltrim($validator, '?');
+
         // Validator is a string with the format 'class::field'
         [$class, $field] = explode('::', $validator);
 
@@ -140,12 +151,23 @@ class Validator {
 
         // 'validate_field' is a method of the class.
         if(!method_exists($class, 'validate_' . $field)){
-            throw new Exception('Validator method does not exist');
+            throw new Exception("Method validate_$field does not exist in $class");
         }
 
         $validatorInstance = $this->container->get($class);
+        $validator = \Closure::fromCallable([$validatorInstance, 'validate_' . $field]);
 
-        return \Closure::fromCallable([$validatorInstance, 'validate_' . $field]);
+        if($optional){
+            return function($value) use ($validator){
+                if($value === null){
+                    return;
+                }
+
+                $validator($value);
+            };
+        } else {
+            return $validator;
+        }
     }
 
     protected function validate_string(&$value){
@@ -156,5 +178,14 @@ class Validator {
 
         // Title does not contain leading or trailing spaces
         $value = trim($value);
+    }
+
+    protected function getUser(){
+        $token = $this->tokenStorage->getToken();
+        if(!$token){
+            return null;
+        }
+
+        return $token->getUser();
     }
 }
