@@ -12,8 +12,13 @@ use App\Entity\Advice;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use ApiPlatform\OpenApi\Model\SecurityScheme;
+
 
 #[Route('/api/v1')]
 final class AdviceController extends AbstractController
@@ -23,13 +28,28 @@ final class AdviceController extends AbstractController
     ) {
     }
 
-    /**
-     * Returns all advices
-     * 
-     * @return JsonResponse The advices
-     * 
-     */
+    #[OA\Get(
+        path: "/api/v1/advices",
+        summary: "Get all advices",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "month",
+                in: "query",
+                required: false,
+                schema: new OA\Schema(type: "string")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Returns the list of advices",
+                content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
+            )
+        ],
+    )]
     #[Route('/advices', name: 'app_advice', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Get the month parameter
@@ -37,7 +57,7 @@ final class AdviceController extends AbstractController
         $month = $request->query->get('month');
 
         // Get all advices from the database
-        if(!empty($month)) {
+        if (!empty($month)) {
             $advices = $entityManager->getRepository(Advice::class)->findByMonth($month);
         } else {
             $advices = $entityManager->getRepository(Advice::class)->findAll();
@@ -56,7 +76,35 @@ final class AdviceController extends AbstractController
      * @return JsonResponse The advice data
      * 
      */
+    #[OA\Post(
+        path: "/api/v1/advices",
+        summary: "Create a new advice",
+        tags: ["Advice"],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "month", type: "string"),
+                    new OA\Property(property: "title", type: "string"),
+                    new OA\Property(property: "content", type: "string"),
+                    new OA\Property(property: "author", type: "integer", nullable: true)
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "Advice created",
+                content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid input"
+            )
+        ]
+    )]
     #[Route('/advices', name: 'app_advice_create', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
         // Get the data from the request
@@ -102,7 +150,32 @@ final class AdviceController extends AbstractController
      * @return JsonResponse The advice data
      * 
      */
+    #[OA\Get(
+        path: "/api/v1/advices/{id}",
+        summary: "Get an advice by ID",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Returns the advice",
+                content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Advice not found"
+            )
+        ]
+    )]
     #[Route('/advices/{id}', name: 'app_advice_get', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
         // Get the advice from the database
@@ -121,7 +194,42 @@ final class AdviceController extends AbstractController
      * @return JsonResponse The advice data
      * 
      */
+    #[OA\Put(
+        path: "/api/v1/advices/{id}",
+        summary: "Update an advice by ID",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "month", type: "string"),
+                    new OA\Property(property: "title", type: "string"),
+                    new OA\Property(property: "content", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Returns the updated advice",
+                content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Advice not found"
+            )
+        ]
+    )]
     #[Route('/advices/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
+    #[IsGranted('ROLE_USER')]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
         // Get the advice from the database
@@ -169,7 +277,32 @@ final class AdviceController extends AbstractController
      * @return JsonResponse The advice data
      * 
      */
+    #[OA\Get(
+        path: "/api/v1/users/{id}/advices",
+        summary: "Get all advices by user ID",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Returns the list of advices",
+                content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
+            ),
+            new OA\Response(
+                response: 404,
+                description: "User not found"
+            )
+        ]
+    )]
     #[Route('/users/{id}/advices', name: 'app_user_advices', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function userAdvices(EntityManagerInterface $entityManager, int $id): Response
     {
         // Get the user from the database

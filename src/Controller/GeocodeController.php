@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\GeocodeApiClient;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 
 #[Route('/api/v1/test')]
@@ -23,7 +27,28 @@ final class GeocodeController extends AbstractController
      * @return JsonResponse The geocode position
      * 
      */
+    #[OA\Get(
+        path: "/api/v1/test/geocode/{postalCode}",
+        summary: "Get geocode position by postal code",
+        tags: ["Geocode"],
+        parameters: [
+            new OA\Parameter(
+                name: "postalCode",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "string")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Returns the geocode position",
+                content: new OA\JsonContent(type: "object")
+            )
+        ]
+    )]
     #[Route('/geocode/{postalCode}', name: 'app_geocode', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
     public function index(string $postalCode): Response
     {
         // Get the response from the GeocodeApiClient service

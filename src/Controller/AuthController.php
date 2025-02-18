@@ -7,12 +7,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
+use OpenApi\Attributes as OA;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 #[Route('/api/v1')]
 class AuthController extends AbstractController
@@ -23,12 +25,32 @@ class AuthController extends AbstractController
     ) {
     }
 
-    /**
-     * Create a new user
-     * 
-     * @return JsonResponse The user data
-     * 
-     */
+    #[OA\Post(
+        path: "/api/v1/register",
+        summary: "Register a new user",
+        tags: ["Auth"],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "username", type: "string"),
+                    new OA\Property(property: "postal_code", type: "string"),
+                    new OA\Property(property: "password", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "User created",
+                content: new OA\JsonContent(ref: new Model(type: User::class, groups: ["user:read"]))
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid input"
+            )
+        ]
+    )]
     #[Route('/register', name: 'api_user_create', methods: ['POST'])]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
