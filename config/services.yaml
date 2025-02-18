@@ -34,3 +34,11 @@ services:
     App\Service\GeocodeApiClient:
         arguments:
             $cache: '@cache.app'
+
+    Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
+
+    App\Service\Validator\:
+        resource: '../src/Service/Validator/*'
+        public: true
+
+    Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface: '@security.token_storage'

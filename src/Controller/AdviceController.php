@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use App\Entity\Advice;
 use App\Entity\User;
+use App\Service\Validator\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,7 +25,8 @@ use ApiPlatform\OpenApi\Model\SecurityScheme;
 final class AdviceController extends AbstractController
 {
     public function __construct(
-        protected SerializerInterface $serializer
+        protected SerializerInterface $serializer,
+        protected Validator $validator
     ) {
     }
 
@@ -107,31 +109,17 @@ final class AdviceController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function create(EntityManagerInterface $entityManager, Request $request): Response
     {
-        // Get the data from the request
-        $data = json_decode($request->getContent(), true);
-        if (empty($data)) {
-            throw new HttpException(400, "Couldn't parse JSON body");
-        }
+        $data = $this->validator->validate($request, [
+            'body' => [
+                'month' => 'advice::month',
+                'title' => 'advice::title',
+                'content' => 'advice::content',
+                'author' => 'advice::author'
+            ]
+        ]);
 
-        $advice = new Advice();
-        $advice->setMonth($data['month']);
-        $advice->setTitle($data['title']);
-        $advice->setContent($data['content']);
-
-        if (isset($data['author'])) {
-            if (
-                $this->isGranted('ROLE_ADMIN')
-                || $this->getUser()->getId() === $data['author']
-            ) {
-                $author = $entityManager->getRepository(User::class)->find($data['author']);
-                $advice->setAuthor($author);
-            } else {
-                throw new HttpException(403, "You are not allowed to set another author than yourself");
-            }
-        } else {
-            $author = $this->getUser();
-            $advice->setAuthor($author);
-        }
+        $data = $data['body'];
+        $advice = new Advice($data);
 
         // Save the advice to the database
         $entityManager->persist($advice);
@@ -228,7 +216,7 @@ final class AdviceController extends AbstractController
             )
         ]
     )]
-    #[Route('/advices/{id}', name: 'app_advice_update', methods: ['PUT', 'PATCH'])]
+    #[Route('/advices/{id}', name: 'app_advice_update', methods: ['PUT'])]
     #[IsGranted('ROLE_USER')]
     public function update(EntityManagerInterface $entityManager, Request $request, int $id): Response
     {
@@ -243,22 +231,21 @@ final class AdviceController extends AbstractController
         // Check access rights
         $this->denyAccessUnlessGranted('edit', $advice);
 
-        // Decode the JSON data
-        $data = json_decode($request->getContent(), true);
-        if (empty($data)) {
-            throw new HttpException(400, "Couldn't parse JSON body");
-        }
+        // Fill the advice with the new data
+        $data = $this->validator->validate($request, [
+            'body' => [
+                'month' => 'advice::month',
+                'title' => 'advice::title',
+                'content' => 'advice::content',
+                'author' => 'advice::author'
+            ]
+        ]);
 
-        // Update the advice's data
-        if (isset($data['month'])) {
-            $advice->setMonth($data['month']);
-        }
-        if (isset($data['title'])) {
-            $advice->setTitle($data['title']);
-        }
-        if (isset($data['content'])) {
-            $advice->setContent($data['content']);
-        }
+        $data = $data['body'];
+        $advice->setMonth($data['month']);
+        $advice->setTitle($data['title']);
+        $advice->setContent($data['content']);
+        $advice->setAuthor($data['author']);
 
         // Save the advice to the database
         $entityManager->persist($advice);
@@ -273,6 +260,58 @@ final class AdviceController extends AbstractController
 
     /**
      * Delete an advice by ID
+     * 
+     * @return JsonResponse The response status
+     * 
+     */
+    #[OA\Delete(
+        path: "/api/v1/advices/{id}",
+        summary: "Delete an advice by ID",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: "Advice deleted"
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Advice not found"
+            )
+        ]
+    )]
+    #[Route('/advices/{id}', name: 'app_advice_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_USER')]
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    {
+        // Get the advice from the database
+        $advice = $entityManager->getRepository(Advice::class)->find($id);
+
+        // If the advice doesn't exist, return a 404 Not Found response
+        if (!$advice) {
+            throw new HttpException(404, "Advice not found");
+        }
+
+        // Check access rights
+        $this->denyAccessUnlessGranted('delete', $advice);
+
+        // Remove the advice from the database
+        $entityManager->remove($advice);
+        $entityManager->flush();
+
+        // Return a 204 No Content response
+        return new Response(null, 204);
+    }
+
+    /**
+     * Get all advices by user ID
      * 
      * @return JsonResponse The advice data
      * 

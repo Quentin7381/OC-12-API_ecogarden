@@ -34,6 +34,14 @@ class Advice
     #[Groups(['advice:read', 'advice:write'])]
     private ?User $author = null;
 
+    public function __construct(array $data = [])
+    {
+        $this->month = $data['month'] ?? [];
+        $this->title = $data['title'] ?? null;
+        $this->content = $data['content'] ?? null;
+        $this->author = $data['author'] ?? null;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
