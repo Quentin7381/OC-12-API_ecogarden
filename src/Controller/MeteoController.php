@@ -57,7 +57,7 @@ final class MeteoController extends AbstractController
     public function index(string $postal_code): Response
     {
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($response, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -94,6 +94,6 @@ final class MeteoController extends AbstractController
 
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
 
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($response, 200, ['Content-Type' => 'application/json'], true);
     }
 }

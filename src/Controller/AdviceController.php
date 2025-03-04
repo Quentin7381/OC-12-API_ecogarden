@@ -69,7 +69,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -127,7 +127,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 201, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 201, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -171,7 +171,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -247,7 +247,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -351,6 +351,6 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 }

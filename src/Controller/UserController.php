@@ -61,7 +61,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($users, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -109,7 +109,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -181,7 +181,7 @@ final class UserController extends AbstractController
         $entityManager->flush();
 
         // Hash the password with symfony's password encoder
-        if(!empty($data['password'])){
+        if (!empty($data['password'])) {
             $password = $data['password'];
             $hash = $this->passwordEncoder->hashPassword($user, $password);
             $user->setPassword($hash);
@@ -191,7 +191,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
 }

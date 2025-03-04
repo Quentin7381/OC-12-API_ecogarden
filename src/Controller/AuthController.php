@@ -66,6 +66,7 @@ class AuthController extends AbstractController
         ], $user);
 
         // Hash the password with symfony's password encoder
+        $data = $data['body'];
         $password = $data['password'];
         $hash = $this->passwordEncoder->hashPassword($user, $password);
         $user->setPassword($hash);
@@ -77,7 +78,7 @@ class AuthController extends AbstractController
         // Serialize the data with groups
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
-        // Return a 201 Created response
-        return new JsonResponse($data, 201, ['Content-Type' => 'application/json']);
+        // Return a 201 Created response without re-serializing the data
+        return new JsonResponse($data, 201, [], true);
     }
 }
