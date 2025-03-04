@@ -50,8 +50,6 @@ class UserValidator extends Validator
             throw new Exception('Invalid value format, requires a string');
         }
 
-        $value = preg_replace('/[^0-9]/', '', $value);
-
         if(strlen($value) !== 5){
             throw new Exception('Value must be 5 characters long');
         }
