@@ -59,30 +59,36 @@ class Validator {
         // Prepare the needs.
         $needs = $this->prepareNeeds($needs);
 
+        // Prepare data
+        $data = [
+            'additional_data' => $additional_data,
+            'header' => [],
+            'query' => [],
+            'body' => []
+        ];
+
         if($request) {
             // Prepare the data.
-            $data = [
-                'header' => $request->headers->all(),
-                'query' => $request->query->all(),
-                'additional_data' => $additional_data
-            ];
+            $data['query'] = $request->query->all();
+            $data['header'] = $request->headers->all();
     
             // Get the body
             $body = $request->getContent();
-        }
 
-        if(!empty($body)){
-            $body = json_decode($body, true);
-
-            // If the body is not a valid JSON, we throw an exception.
-            if(empty($body)){
-                throw new HttpException(400, 'Invalid JSON body');
+            if(!empty($body)){
+                $body = json_decode($body, true);
+    
+                // If the body is not a valid JSON, we throw an exception.
+                if(empty($body)){
+                    throw new HttpException(400, 'Invalid JSON body');
+                }
+            } else {
+                $body = [];
             }
-        } else {
-            $body = [];
+
+            $data['body'] = $body;
         }
 
-        $data['body'] = $body;
 
         // Save the request data.
         $this->request_data = $data;

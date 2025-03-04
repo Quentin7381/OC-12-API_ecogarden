@@ -194,4 +194,101 @@ final class UserController extends AbstractController
         return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
     }
 
+    #[OA\Post(
+        path: "/api/v1/users",
+        summary: "Register a new user",
+        tags: ["Auth"],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "username", type: "string"),
+                    new OA\Property(property: "postal_code", type: "string"),
+                    new OA\Property(property: "password", type: "string")
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: "User created",
+                content: new OA\JsonContent(ref: new Model(type: User::class, groups: ["user:read"]))
+            ),
+            new OA\Response(
+                response: 400,
+                description: "Invalid input"
+            )
+        ]
+    )]
+    #[Route('/users', name: 'api_user_create', methods: ['POST'])]
+    public function create(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $user = new User();
+        $data = $this->validator->fill($request, [
+            'body' => [
+                'username' => 'user::username',
+                'postal_code' => 'user::postal_code',
+                'password' => 'user::password',
+                'roles' => 'user::roles'
+            ]
+        ], $user);
+
+        // Hash the password with symfony's password encoder
+        $data = $data['body'];
+        $password = $data['password'];
+        $hash = $this->passwordEncoder->hashPassword($user, $password);
+        $user->setPassword($hash);
+
+        // Save the user to the database
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
+
+        // Return a 201 Created response without re-serializing the data
+        return new JsonResponse($data, 201, [], true);
+    }
+
+    #[OA\Delete(
+        path: "/api/v1/users/{id}",
+        summary: "Delete a user by ID",
+        tags: ["User"],
+        parameters: [
+            new OA\Parameter(
+                name: "id",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "integer")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: "User deleted"
+            ),
+            new OA\Response(
+                response: 404,
+                description: "User not found"
+            )
+        ]
+    )]
+    #[Route('/users/{id}', name: 'api_user_delete', methods: ['DELETE'])]
+    #[IsGranted('ROLE_USER')]
+    public function delete(EntityManagerInterface $entityManager, int $id): Response
+    {
+        $user = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$user) {
+            throw new HttpException(404, "User not found");
+        }
+
+        // Check access rights
+        $this->denyAccessUnlessGranted('delete', $user);
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return new JsonResponse(null, 204);
+    }
 }

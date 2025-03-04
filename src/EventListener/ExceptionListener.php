@@ -10,10 +10,14 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event)
     {
         $exception = $event->getThrowable();
-        $response = new JsonResponse([
-            'error' => $exception->getMessage(),
-            'trace' => $exception->getTrace()
-        ]);
+
+        $data = ['error' => $exception->getMessage()];
+        if(!$exception instanceof HttpExceptionInterface){
+            $data['type'] = get_class($exception);
+            $data['trace'] = $exception->getTrace();
+        }
+
+        $response = new JsonResponse($data);
 
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());

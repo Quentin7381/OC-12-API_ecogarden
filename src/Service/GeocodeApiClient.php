@@ -7,15 +7,16 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 use App\Service\Validator\Validator;
+use Symfony\Component\HttpClient\Exception\TransportException;
 
 class GeocodeApiClient
 {
 
     public function __construct(
-        private ApiClient $apiClient, 
-        private CacheInterface $cache, 
+        private ApiClient $apiClient,
+        private CacheInterface $cache,
         private Validator $validator
-    ){
+    ) {
         $this->apiClient = $apiClient;
         $this->cache = $cache;
     }
@@ -23,13 +24,13 @@ class GeocodeApiClient
     public function getGeocodePosition(string $postalCode): array
     {
 
-        return $this->cache->get('geocode_' . $postalCode, function (ItemInterface $item) use ($postalCode) {            
+        return $this->cache->get('geocode_' . $postalCode, function (ItemInterface $item) use ($postalCode) {
             // No cache expiration
             $item->expiresAfter(null);
 
             // Check postal code
             $this->validator->validate(null, [
-                'postal_code' => [
+                'additional_data' => [
                     'postal_code' => 'user::postal_code'
                 ]
             ], ['postal_code' => $postalCode]);
@@ -49,7 +50,11 @@ class GeocodeApiClient
             $url .= http_build_query($params);
 
             // Get the response
-            $response = $this->apiClient->fetchData($url);
+            try {
+                $response = $this->apiClient->fetchData($url);
+            } catch (TransportException $e) {
+                throw new HttpException(500, 'External API Geocode did not respond in time.');
+            }
 
             // Manage an empty response
             if (empty($response)) {

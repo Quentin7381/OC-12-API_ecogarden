@@ -58,15 +58,6 @@ final class MeteoController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function index(string $postal_code): Response
     {
-        $this->validator->validate(null, [
-            'additional_data' => [
-                'postal_code' => 'user::postal_code'
-            ],
-        ],    
-        [
-            'postal_code' => $postal_code
-        ]);
-
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
         return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
@@ -105,6 +96,6 @@ final class MeteoController extends AbstractController
 
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
 
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
 }

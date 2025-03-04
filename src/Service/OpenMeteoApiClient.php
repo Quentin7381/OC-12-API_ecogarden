@@ -4,15 +4,19 @@ namespace App\Service;
 
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpClient\Exception\TransportException;
+
+use App\Service\Validator\Validator;
 
 class OpenMeteoApiClient
 {
-    private CacheInterface $cache;
 
     public function __construct(
         private ApiClient $apiClient,
         private GeocodeApiClient $geocodeApiClient,
-        CacheInterface $cache
+        private Validator $validator,
+        private CacheInterface $cache
     ) {
         $this->cache = $cache;
     }
@@ -21,6 +25,13 @@ class OpenMeteoApiClient
     {
         return $this->cache->get('meteo_' . $postal_code, function (ItemInterface $item) use ($postal_code) {
             $item->expiresAfter(3600); // Cache for 1 hour
+
+            // Check postal code
+            $this->validator->validate(null, [
+                'additional_data' => [
+                    'postal_code' => 'user::postal_code'
+                ]
+            ], ['postal_code' => $postal_code]);
 
             // Transform the postal code into latitude and longitude
             $params = $this->geocodeApiClient->getGeocodePosition($postal_code);
@@ -36,7 +47,13 @@ class OpenMeteoApiClient
             $url .= http_build_query($params) . '&' . http_build_query($constants);
 
             // Get the response
-            return $this->apiClient->fetchData($url);
+            try {
+                $response = $this->apiClient->fetchData($url);
+            } catch (TransportException $e) {
+                throw new HttpException(500, 'External API Open Meteo did not respond in time.');
+            }
+
+            return $response;
         });
     }
 }

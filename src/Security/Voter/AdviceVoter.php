@@ -11,6 +11,7 @@ class AdviceVoter extends Voter
 {
     const VIEW = 'view';
     const EDIT = 'edit';
+    const DELETE = 'delete';
 
     private $security;
 
@@ -21,7 +22,7 @@ class AdviceVoter extends Voter
 
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::VIEW, self::EDIT])
+        return in_array($attribute, [self::VIEW, self::EDIT, self::DELETE])
             && $subject instanceof \App\Entity\Advice;
     }
 
@@ -44,6 +45,7 @@ class AdviceVoter extends Voter
             case self::VIEW:
                 return true;
             case self::EDIT:
+            case self::DELETE:
                 return $user === $subject_author;
         }
 

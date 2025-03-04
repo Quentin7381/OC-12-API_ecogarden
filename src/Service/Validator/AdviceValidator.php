@@ -80,8 +80,8 @@ class AdviceValidator extends Validator
         $this->validate_string($value);
 
         // Content is at least 50 characters long
-        if (strlen($value) < 50) {
-            throw new Exception("The value must be at least 50 characters long");
+        if (strlen($value) < 20) {
+            throw new Exception("The value must be at least 20 characters long");
         }
 
         // Content is at most 5000 characters long
