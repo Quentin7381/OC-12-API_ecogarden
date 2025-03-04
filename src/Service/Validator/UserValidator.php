@@ -51,7 +51,7 @@ class UserValidator extends Validator
         }
 
         if(strlen($value) !== 5){
-            throw new Exception('Value must be 5 characters long');
+            throw new Exception('Value must be 5 exactly characters long');
         }
 
         if(!is_numeric($value)){

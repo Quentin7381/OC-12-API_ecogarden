@@ -23,8 +23,8 @@ class Validator {
     ){
     }
 
-    public function fill($request, $needs, $entity, $additionalData = []): array{
-        $data = $this->validate($request, $needs, $additionalData);
+    public function fill($request, $needs, $entity, $additional_data = []): array{
+        $data = $this->validate($request, $needs, $additional_data);
 
         $collectedData = [];
         foreach($needs as $key => $value){
@@ -50,7 +50,7 @@ class Validator {
         return $data;
     }
 
-    public function validate($request, $needs, $additionalData = []): array{
+    public function validate($request, $needs, $additional_data = []): array{
         // We don't need to validate anything if there is no needs.
         if(empty($needs)){
             return [];
@@ -59,15 +59,17 @@ class Validator {
         // Prepare the needs.
         $needs = $this->prepareNeeds($needs);
 
-        // Prepare the data.
-        $data = [
-            'header' => $request->headers->all(),
-            'query' => $request->query->all(),
-            'additional' => $additionalData
-        ];
-
-        // Get the body
-        $body = $request->getContent();
+        if($request) {
+            // Prepare the data.
+            $data = [
+                'header' => $request->headers->all(),
+                'query' => $request->query->all(),
+                'additional_data' => $additional_data
+            ];
+    
+            // Get the body
+            $body = $request->getContent();
+        }
 
         if(!empty($body)){
             $body = json_decode($body, true);
@@ -112,15 +114,16 @@ class Validator {
      * @return array
      */
     private function prepareNeeds($needs): array{
-        // Needs is an array of three keys, header, body, and query.
+        // Needs is an array of four keys, header, body, query, and additional_data.
+        $VALID_KEYS = ['header', 'body', 'query', 'additional_data'];
 
         // If none of the keys are set, we assume body.
-        if(!array_intersect_key($needs, array_flip(['header', 'body', 'query']))){
+        if(!array_intersect_key($needs, array_flip($VALID_KEYS))){
             $needs = ['body' => $needs];
         }
 
         // Once done, there is no other keys than header, body, and query.
-        if(array_diff_key($needs, array_flip(['header', 'body', 'query']))){
+        if(array_diff_key($needs, array_flip($VALID_KEYS))){
             throw new Exception('Invalid needs array keys, requires header, body, and/or query');
         }
 

@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Service\ApiClient;
 use App\Service\GeocodeApiClient;
 use App\Service\OpenMeteoApiClient;
+use App\Service\Validator\Validator;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,7 +16,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use OpenApi\Attributes as OA;
-use Nelmio\ApiDocBundle\Annotation\Model;
 
 #[Route('/api/v1')]
 final class MeteoController extends AbstractController
@@ -22,7 +23,8 @@ final class MeteoController extends AbstractController
     public function __construct(
         private ApiClient $apiClient,
         private GeocodeApiClient $geocodeApiClient,
-        private OpenMeteoApiClient $openMeteoApiClient
+        private OpenMeteoApiClient $openMeteoApiClient,
+        protected Validator $validator
     ) {
     }
 
@@ -56,8 +58,17 @@ final class MeteoController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function index(string $postal_code): Response
     {
+        $this->validator->validate(null, [
+            'additional_data' => [
+                'postal_code' => 'user::postal_code'
+            ],
+        ],    
+        [
+            'postal_code' => $postal_code
+        ]);
+
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
     }
 
     /**
