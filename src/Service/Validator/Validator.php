@@ -67,12 +67,17 @@ class Validator {
         ];
 
         // Get the body
-        $body = json_decode($request->getContent(), true) ?? [];
+        $body = $request->getContent();
 
-        // TODO : what if is this is bodyless
-        // If the body is not an array, we throw an exception.
-        if(empty($body)){
-            throw new HttpException(400, 'Invalid JSON body');
+        if(!empty($body)){
+            $body = json_decode($body, true);
+
+            // If the body is not a valid JSON, we throw an exception.
+            if(empty($body)){
+                throw new HttpException(400, 'Invalid JSON body');
+            }
+        } else {
+            $body = [];
         }
 
         $data['body'] = $body;
