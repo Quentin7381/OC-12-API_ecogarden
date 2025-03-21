@@ -19,10 +19,12 @@ class AdviceRepository extends ServiceEntityRepository
     public function findByMonth($month)
     {
         // Find if the month is in the advice month array
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.month LIKE :month')
-            ->setParameter('month', '%' . $month . '%')
+        $advices = $this->createQueryBuilder('a')
             ->getQuery()
             ->getResult();
+
+        return array_filter($advices, function($advice) use ($month) {
+            return in_array($month, $advice->getMonth());
+        });
     }
 }
