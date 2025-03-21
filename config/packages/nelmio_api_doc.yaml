@@ -1,29 +1,29 @@
 nelmio_api_doc:
     documentation:
         info:
-            title: Books
-            description: Une API d'OpenClassrooms avec des livres, des autrices et des auteurs !
+            title: EcoGarden API
+            description: Partagez vos conseils de jardinage
             version: 2.0.0
-        paths:
-            /api/v1/login:
-                post:
-                    operationId: postCredentialsItem
-                    tags:
-                        - Auth
-                    summary: Permet d'obtenir le token JWT pour se logger.
-                    requestBody:
-                        description: Crée un nouveau token JWT
-                        content:
-                            application/json:
-                                schema:
-                                    $ref: '#/components/schemas/Credentials'
-                    responses:
-                        '200':
-                            description: Récupère le token JWT
-                            content:
-                                application/json:
-                                    schema:
-                                        $ref: '#/components/schemas/Token'
+        # paths:
+        #     /api/v1/login:
+        #         post:
+        #             operationId: postCredentialsItem
+        #             tags:
+        #                 - Auth
+        #             summary: Permet d'obtenir le token JWT pour se logger.
+        #             requestBody:
+        #                 description: Crée un nouveau token JWT
+        #                 content:
+        #                     application/json:
+        #                         schema:
+        #                             $ref: '#/components/schemas/Credentials'
+        #             responses:
+        #                 '200':
+        #                     description: Récupère le token JWT
+        #                     content:
+        #                         application/json:
+        #                             schema:
+        #                                 $ref: '#/components/schemas/Token'
         components:
             schemas:
                 Token:
@@ -44,7 +44,7 @@ nelmio_api_doc:
             securitySchemes:
                 bearerAuth:
                     type: apiKey
-                    description: 'Value: Bearer {jwt}'
+                    description: 'Bearer {jwt}'
                     name: Authorization
                     in: header
             security:
