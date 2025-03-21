@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 
-
+// TODO : retirer V1
 #[Route('/api/v1')]
 final class AdviceController extends AbstractController
 {
@@ -44,17 +44,20 @@ final class AdviceController extends AbstractController
         ],
         responses: [
             new OA\Response(
+                // TODO : changer pour contantes HTTP (moins de risque de mise à jour)
                 response: 200,
                 description: "Returns the list of advices",
                 content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
             )
         ],
     )]
+
     #[Route('/advices', name: 'app_advice', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         // Get the month parameter
+        // TODO : Utiliser injection de dependance
         $request = Request::createFromGlobals();
         $month = $request->query->get('month');
 
@@ -164,6 +167,7 @@ final class AdviceController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function get(EntityManagerInterface $entityManager, int $id): Response
     {
+        // TODO : changer pour month
         // Get the advice from the database
         $advice = $entityManager->getRepository(Advice::class)->find($id);
 
