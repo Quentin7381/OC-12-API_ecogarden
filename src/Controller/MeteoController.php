@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use OpenApi\Attributes as OA;
 
-#[Route('/api/v1')]
+#[Route('/api')]
 final class MeteoController extends AbstractController
 {
     public function __construct(
@@ -35,7 +35,7 @@ final class MeteoController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/meteo/{postal_code}",
+        path: "/api/meteo/{postal_code}",
         summary: "Get meteo data by postal code",
         tags: ["Meteo"],
         parameters: [
@@ -69,7 +69,7 @@ final class MeteoController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/meteo",
+        path: "/api/meteo",
         summary: "Get default meteo data for the authenticated user",
         tags: ["Meteo"],
         responses: [

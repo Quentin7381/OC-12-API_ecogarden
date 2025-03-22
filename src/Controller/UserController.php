@@ -23,7 +23,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 /**
  * @Route("/api/v1")
  */
-#[Route('/api/v1')]
+#[Route('/api')]
 final class UserController extends AbstractController
 {
     public function __construct(
@@ -40,7 +40,7 @@ final class UserController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/users",
+        path: "/api/users",
         summary: "Get all users",
         tags: ["User"],
         responses: [
@@ -71,7 +71,7 @@ final class UserController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/users/{id}",
+        path: "/api/users/{id}",
         summary: "Get a user by ID",
         tags: ["User"],
         parameters: [
@@ -119,7 +119,7 @@ final class UserController extends AbstractController
      * 
      */
     #[OA\Put(
-        path: "/api/v1/users/{id}",
+        path: "/api/users/{id}",
         summary: "Update a user by ID",
         tags: ["User"],
         parameters: [
@@ -195,7 +195,7 @@ final class UserController extends AbstractController
     }
 
     #[OA\Post(
-        path: "/api/v1/users",
+        path: "/api/users",
         summary: "Register a new user",
         tags: ["Auth"],
         requestBody: new OA\RequestBody(
@@ -251,7 +251,7 @@ final class UserController extends AbstractController
     }
 
     #[OA\Delete(
-        path: "/api/v1/users/{id}",
+        path: "/api/users/{id}",
         summary: "Delete a user by ID",
         tags: ["User"],
         parameters: [

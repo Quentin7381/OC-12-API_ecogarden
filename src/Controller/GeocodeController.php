@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 
 
-#[Route('/api/v1/test')]
+#[Route('/api/test')]
 final class GeocodeController extends AbstractController
 {
     public function __construct(
@@ -28,7 +28,7 @@ final class GeocodeController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/test/geocode/{postalCode}",
+        path: "/api/test/geocode/{postalCode}",
         summary: "Get geocode position by postal code",
         tags: ["Geocode"],
         parameters: [

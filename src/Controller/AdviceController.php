@@ -21,7 +21,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 
 
-#[Route('/api/v1')]
+#[Route('/api')]
 final class AdviceController extends AbstractController
 {
     public function __construct(
@@ -31,7 +31,7 @@ final class AdviceController extends AbstractController
     }
 
     #[OA\Get(
-        path: "/api/v1/advices",
+        path: "/api/advices",
         summary: "Get all advices",
         tags: ["Advice"],
         parameters: [],
@@ -57,7 +57,7 @@ final class AdviceController extends AbstractController
     }
 
     #[OA\Get(
-        path: "/api/v1/advices/{month}",
+        path: "/api/advices/{month}",
         summary: "Get all advices by month",
         tags: ["Advice"],
         parameters: [
@@ -101,7 +101,7 @@ final class AdviceController extends AbstractController
      * 
      */
     #[OA\Post(
-        path: "/api/v1/advices",
+        path: "/api/advices",
         summary: "Create a new advice",
         tags: ["Advice"],
         requestBody: new OA\RequestBody(
@@ -159,7 +159,7 @@ final class AdviceController extends AbstractController
      * 
      */
     #[OA\Put(
-        path: "/api/v1/advices/{id}",
+        path: "/api/advices/{id}",
         summary: "Update an advice by ID",
         tags: ["Advice"],
         parameters: [
@@ -235,7 +235,7 @@ final class AdviceController extends AbstractController
      * 
      */
     #[OA\Delete(
-        path: "/api/v1/advices/{id}",
+        path: "/api/advices/{id}",
         summary: "Delete an advice by ID",
         tags: ["Advice"],
         parameters: [
@@ -287,7 +287,7 @@ final class AdviceController extends AbstractController
      * 
      */
     #[OA\Get(
-        path: "/api/v1/users/{id}/advices",
+        path: "/api/users/{id}/advices",
         summary: "Get all advices by user ID",
         tags: ["Advice"],
         parameters: [
