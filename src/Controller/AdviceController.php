@@ -81,7 +81,7 @@ final class AdviceController extends AbstractController
         ]
     )]
 
-    #[Route('/advices/{month}', name: 'app_advice', methods: ['GET'])]
+    #[Route('/advices/{month}', name: 'app_advice_month', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function getByMonth(EntityManagerInterface $entityManager, string $month): Response
     {
