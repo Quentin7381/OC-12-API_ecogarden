@@ -5,4 +5,4 @@ controllers:
     type: attribute
 
 api_login_check:
-    path: /api/v1/auth
+    path: /api/auth

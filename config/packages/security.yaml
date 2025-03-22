@@ -16,10 +16,10 @@ security:
             security: false
 
         login:
-            pattern: ^/api/v1/auth
+            pattern: ^/api/auth
             stateless: true
             json_login:
-                check_path: /api/v1/auth
+                check_path: /api/auth
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
@@ -29,12 +29,12 @@ security:
             jwt: ~
 
     access_control:
-        - { path: ^/api/v1/auth, roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/users, roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/users, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
-        - { path: ^/api/v1/test, roles: IS_AUTHENTICATED_FULLY } # TODO : Set to admin
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/test, roles: IS_AUTHENTICATED_FULLY } # TODO : Set to admin
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
