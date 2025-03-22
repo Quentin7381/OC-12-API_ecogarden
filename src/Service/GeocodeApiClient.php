@@ -5,6 +5,7 @@ namespace App\Service;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Service\Validator\Validator;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -53,12 +54,12 @@ class GeocodeApiClient
             try {
                 $response = $this->apiClient->fetchData($url);
             } catch (TransportException $e) {
-                throw new HttpException(500, 'External API Geocode did not respond in time.');
+                throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, 'External API Geocode did not respond in time.');
             }
 
             // Manage an empty response
             if (empty($response)) {
-                throw new HttpException(404, 'Catcode not found in France or invalid');
+                throw new HttpException(Response::HTTP_NOT_FOUND, 'Catcode not found in France or invalid');
             }
 
             // Manage multiple responses (first is most relevant)

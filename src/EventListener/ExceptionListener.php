@@ -2,6 +2,7 @@
 namespace App\EventListener;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -12,7 +13,7 @@ class ExceptionListener
         $exception = $event->getThrowable();
 
         $data = ['error' => $exception->getMessage()];
-        if(!$exception instanceof HttpExceptionInterface){
+        if (!$exception instanceof HttpExceptionInterface) {
             $data['type'] = get_class($exception);
             $data['trace'] = $exception->getTrace();
         }
@@ -22,7 +23,7 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
         } else {
-            $response->setStatusCode(500);
+            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $event->setResponse($response);

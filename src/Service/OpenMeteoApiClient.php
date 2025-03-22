@@ -6,6 +6,7 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpClient\Exception\TransportException;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Service\Validator\Validator;
 
@@ -50,7 +51,7 @@ class OpenMeteoApiClient
             try {
                 $response = $this->apiClient->fetchData($url);
             } catch (TransportException $e) {
-                throw new HttpException(500, 'External API Open Meteo did not respond in time.');
+                throw new HttpException(Response::HTTP_INTERNAL_SERVER_ERROR, 'External API Open Meteo did not respond in time.');
             }
 
             return $response;

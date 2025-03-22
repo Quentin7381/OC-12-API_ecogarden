@@ -70,7 +70,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -128,7 +128,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 201, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -173,7 +173,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -249,7 +249,7 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -301,7 +301,7 @@ final class AdviceController extends AbstractController
         $entityManager->flush();
 
         // Return a 204 No Content response
-        return new Response(null, 204);
+        return new Response(null, Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -353,6 +353,6 @@ final class AdviceController extends AbstractController
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 }

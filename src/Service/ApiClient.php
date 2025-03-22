@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class ApiClient
 {
@@ -17,7 +18,7 @@ class ApiClient
     {
         $response = $this->httpClient->request('GET', $url);
 
-        if ($response->getStatusCode() !== 200) {
+        if ($response->getStatusCode() !== Response::HTTP_OK) {
             $response->getContent(true);
         }
 

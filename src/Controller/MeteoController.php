@@ -59,7 +59,7 @@ final class MeteoController extends AbstractController
     public function index(string $postal_code): Response
     {
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($response, Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -89,13 +89,13 @@ final class MeteoController extends AbstractController
     {
         $user = $this->getUser();
         if (!$user) {
-            throw new HttpException(401, 'Unauthorized');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Unauthorized');
         }
 
         $postal_code = $user->getPostalCode();
 
         $response = $this->openMeteoApiClient->getMeteoData($postal_code);
 
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse($response, Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
 }

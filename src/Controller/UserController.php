@@ -61,7 +61,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($users, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -109,7 +109,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
@@ -191,7 +191,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a JSON response
-        return new JsonResponse($data, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     #[OA\Post(
@@ -247,7 +247,7 @@ final class UserController extends AbstractController
         $data = $this->serializer->serialize($user, 'json', ['groups' => 'user:read']);
 
         // Return a 201 Created response without re-serializing the data
-        return new JsonResponse($data, 201, [], true);
+        return new JsonResponse($data, Response::HTTP_CREATED, [], true);
     }
 
     #[OA\Delete(
@@ -289,6 +289,6 @@ final class UserController extends AbstractController
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return new JsonResponse(null, 204);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

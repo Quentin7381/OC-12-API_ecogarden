@@ -55,6 +55,6 @@ final class GeocodeController extends AbstractController
         $response = $this->geocodeApiClient->getGeocodePosition($postalCode);
 
         // Return a JSON response
-        return new JsonResponse($response, 200, ['Content-Type' => 'application/json'], true);
+        return new JsonResponse($response, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 }
