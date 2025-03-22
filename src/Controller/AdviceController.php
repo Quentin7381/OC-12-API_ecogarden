@@ -34,14 +34,7 @@ final class AdviceController extends AbstractController
         path: "/api/v1/advices",
         summary: "Get all advices",
         tags: ["Advice"],
-        parameters: [
-            new OA\Parameter(
-                name: "month",
-                in: "query",
-                required: false,
-                schema: new OA\Schema(type: "string")
-            )
-        ],
+        parameters: [],
         responses: [
             new OA\Response(
                 response: Response::HTTP_OK,
@@ -54,17 +47,45 @@ final class AdviceController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        // Get the month parameter
-        // TODO : Utiliser injection de dependance
-        $request = Request::createFromGlobals();
-        $month = $request->query->get('month');
+        $advices = $entityManager->getRepository(Advice::class)->findAll();
 
-        // Get all advices from the database
-        if (!empty($month)) {
-            $advices = $entityManager->getRepository(Advice::class)->findByMonth($month);
-        } else {
-            $advices = $entityManager->getRepository(Advice::class)->findAll();
-        }
+        // Serialize the data with groups
+        $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
+
+        // Return a JSON response
+        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
+    }
+
+    #[OA\Get(
+        path: "/api/v1/advices/{month}",
+        summary: "Get all advices by month",
+        tags: ["Advice"],
+        parameters: [
+            new OA\Parameter(
+                name: "month",
+                in: "path",
+                required: true,
+                schema: new OA\Schema(type: "string")
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: "Returns the list of advices",
+                content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
+            ),
+            new OA\Response(
+                response: Response::HTTP_NOT_FOUND,
+                description: "No advices found for the given month"
+            )
+        ]
+    )]
+
+    #[Route('/advices/{month}', name: 'app_advice', methods: ['GET'])]
+    #[IsGranted('ROLE_USER')]
+    public function getByMonth(EntityManagerInterface $entityManager, string $month): Response
+    {
+        $advices = $entityManager->getRepository(Advice::class)->findByMonth($month);
 
         // Serialize the data with groups
         $data = $this->serializer->serialize($advices, 'json', ['groups' => 'advice:read']);
@@ -129,51 +150,6 @@ final class AdviceController extends AbstractController
 
         // Return a JSON response
         return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json'], true);
-    }
-
-    /**
-     * Returns an advice by ID
-     * 
-     * @return JsonResponse The advice data
-     * 
-     */
-    #[OA\Get(
-        path: "/api/v1/advices/{id}",
-        summary: "Get an advice by ID",
-        tags: ["Advice"],
-        parameters: [
-            new OA\Parameter(
-                name: "id",
-                in: "path",
-                required: true,
-                schema: new OA\Schema(type: "integer")
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: Response::HTTP_OK,
-                description: "Returns the advice",
-                content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
-            ),
-            new OA\Response(
-                response: Response::HTTP_NOT_FOUND,
-                description: "Advice not found"
-            )
-        ]
-    )]
-    #[Route('/advices/{id}', name: 'app_advice_get', methods: ['GET'])]
-    #[IsGranted('ROLE_USER')]
-    public function get(EntityManagerInterface $entityManager, int $id): Response
-    {
-        // TODO : changer pour month
-        // Get the advice from the database
-        $advice = $entityManager->getRepository(Advice::class)->find($id);
-
-        // Serialize the data with groups
-        $data = $this->serializer->serialize($advice, 'json', ['groups' => 'advice:read']);
-
-        // Return a JSON response
-        return new JsonResponse($data, Response::HTTP_OK, ['Content-Type' => 'application/json'], true);
     }
 
     /**
