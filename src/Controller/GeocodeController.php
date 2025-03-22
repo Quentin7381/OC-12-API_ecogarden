@@ -41,7 +41,7 @@ final class GeocodeController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the geocode position",
                 content: new OA\JsonContent(type: "object")
             )

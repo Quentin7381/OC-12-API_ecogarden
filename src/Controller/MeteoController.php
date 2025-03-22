@@ -48,7 +48,7 @@ final class MeteoController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the meteo data",
                 content: new OA\JsonContent(type: "object")
             )
@@ -74,12 +74,12 @@ final class MeteoController extends AbstractController
         tags: ["Meteo"],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the meteo data",
                 content: new OA\JsonContent(type: "object")
             ),
             new OA\Response(
-                response: 401,
+                response: Response::HTTP_UNAUTHORIZED,
                 description: "Unauthorized"
             )
         ]

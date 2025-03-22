@@ -20,7 +20,7 @@ use OpenApi\Attributes as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use ApiPlatform\OpenApi\Model\SecurityScheme;
 
-// TODO : retirer V1
+
 #[Route('/api/v1')]
 final class AdviceController extends AbstractController
 {
@@ -44,14 +44,12 @@ final class AdviceController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                // TODO : changer pour contantes HTTP (moins de risque de mise à jour)
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the list of advices",
                 content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
             )
         ],
     )]
-
     #[Route('/advices', name: 'app_advice', methods: ['GET'])]
     #[IsGranted('ROLE_USER')]
     public function index(EntityManagerInterface $entityManager): Response
@@ -98,12 +96,12 @@ final class AdviceController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 201,
+                response: Response::HTTP_CREATED,
                 description: "Advice created",
                 content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
             ),
             new OA\Response(
-                response: 400,
+                response: Response::HTTP_BAD_REQUEST,
                 description: "Invalid input"
             )
         ]
@@ -153,12 +151,12 @@ final class AdviceController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the advice",
                 content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "Advice not found"
             )
         ]
@@ -208,12 +206,12 @@ final class AdviceController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the updated advice",
                 content: new OA\JsonContent(ref: new Model(type: Advice::class, groups: ["advice:read"]))
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "Advice not found"
             )
         ]
@@ -274,11 +272,11 @@ final class AdviceController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 204,
+                response: Response::HTTP_NO_CONTENT,
                 description: "Advice deleted"
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "Advice not found"
             )
         ]
@@ -326,12 +324,12 @@ final class AdviceController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the list of advices",
                 content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: Advice::class, groups: ["advice:read"])))
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "User not found"
             )
         ]

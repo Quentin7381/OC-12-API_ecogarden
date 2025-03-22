@@ -45,7 +45,7 @@ final class UserController extends AbstractController
         tags: ["User"],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the list of users",
                 content: new OA\JsonContent(type: "array", items: new OA\Items(ref: new Model(type: User::class, groups: ["user:read"])))
             )
@@ -84,12 +84,12 @@ final class UserController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the user",
                 content: new OA\JsonContent(ref: new Model(type: User::class, groups: ["user:read"]))
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "User not found"
             )
         ]
@@ -141,12 +141,12 @@ final class UserController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: "Returns the updated user",
                 content: new OA\JsonContent(ref: new Model(type: User::class, groups: ["user:read"]))
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "User not found"
             )
         ]
@@ -210,12 +210,12 @@ final class UserController extends AbstractController
         ),
         responses: [
             new OA\Response(
-                response: 201,
+                response: Response::HTTP_CREATED,
                 description: "User created",
                 content: new OA\JsonContent(ref: new Model(type: User::class, groups: ["user:read"]))
             ),
             new OA\Response(
-                response: 400,
+                response: Response::HTTP_BAD_REQUEST,
                 description: "Invalid input"
             )
         ]
@@ -264,11 +264,11 @@ final class UserController extends AbstractController
         ],
         responses: [
             new OA\Response(
-                response: 204,
+                response: Response::HTTP_NO_CONTENT,
                 description: "User deleted"
             ),
             new OA\Response(
-                response: 404,
+                response: Response::HTTP_NOT_FOUND,
                 description: "User not found"
             )
         ]
